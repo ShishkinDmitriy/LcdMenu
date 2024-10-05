@@ -1,8 +1,6 @@
 #pragma once
 
-#include "LcdMenu.h"
 #include "display/DisplayInterface.h"
-#include "utils/constants.h"
 #include <MenuItem.h>
 #include <utils/utils.h>
 
@@ -12,19 +10,18 @@
  * Contains logic of navigating between items. Stores current cursor and view.
  */
 class MenuScreen {
-    friend LcdMenu;
+    friend class LcdMenu;
 
-  private:
     /**
      * @brief Previous screen.
      * When `BACK` command received this screen will be shown.
      */
-    MenuScreen* parent = NULL;
+    MenuScreen* parent = nullptr;
     /**
      * @brief The menu items to be displayed on screen.
      * These items will be drawn on display.
      */
-    MenuItem** items = NULL;
+    MenuItem** items = nullptr;
     /**
      * @brief Cursor position.
      *
@@ -71,7 +68,7 @@ class MenuScreen {
     /**
      * Constructor
      */
-    MenuScreen(MenuItem** items) : items(items) {}
+    explicit MenuScreen(MenuItem** items) : items(items) {}
     /**
      * @brief Set new parent screen.
      */
@@ -79,23 +76,23 @@ class MenuScreen {
     /**
      * @brief Get current cursor position.
      */
-    uint8_t getCursor();
+    uint8_t getCursor() const;
     /**
      * @brief Get a `MenuItem` at position.
      * @return `MenuItem` - item at `position`
      */
-    MenuItem* getItemAt(uint8_t position);
+    MenuItem* getItemAt(uint8_t position) const;
     /**
      * @brief Get a `MenuItem` at position.
      * @return `MenuItem` - item at `position`
      */
-    MenuItem* operator[](const uint8_t position);
+    MenuItem* operator[](uint8_t position) const;
 
   protected:
     /**
      * @brief Get the number of items in the menu.
      */
-    uint8_t itemsCount();
+    uint8_t itemsCount() const;
     /**
      * @brief Move cursor to specified position.
      */
@@ -103,12 +100,12 @@ class MenuScreen {
     /**
      * @brief Draw the screen on display.
      */
-    void draw(DisplayInterface* display);
+    void draw(DisplayInterface* display) const;
     /**
      * @brief Process the command.
      * @return `true` if the command was processed, `false` otherwise.
      */
-    bool process(LcdMenu* menu, const unsigned char command);
+    bool process(LcdMenu* menu, unsigned char command);
     /**
      * @brief Move cursor up.
      */

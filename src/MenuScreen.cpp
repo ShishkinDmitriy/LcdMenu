@@ -1,22 +1,23 @@
 #include "MenuScreen.h"
+#include "LcdMenu.h"
 
 void MenuScreen::setParent(MenuScreen* parent) {
     this->parent = parent;
 }
 
-uint8_t MenuScreen::getCursor() {
+uint8_t MenuScreen::getCursor() const {
     return cursor;
 }
 
-MenuItem* MenuScreen::getItemAt(uint8_t position) {
+MenuItem* MenuScreen::getItemAt(const uint8_t position) const {
     return items[position];
 }
 
-MenuItem* MenuScreen::operator[](const uint8_t position) {
+MenuItem* MenuScreen::operator[](const uint8_t position) const {
     return getItemAt(position);
 }
 
-uint8_t MenuScreen::itemsCount() {
+uint8_t MenuScreen::itemsCount() const {
     uint8_t i = 0;
     while (items[i] != nullptr) {
         i++;
@@ -24,12 +25,12 @@ uint8_t MenuScreen::itemsCount() {
     return i;
 }
 
-void MenuScreen::setCursor(DisplayInterface* display, uint8_t position) {
-    uint8_t constrained = constrain(position, 0, itemsCount() - 1);
+void MenuScreen::setCursor(DisplayInterface* display, const uint8_t position) {
+    const uint8_t constrained = constrain(position, 0, itemsCount() - 1);
     if (constrained == cursor) {
         return;
     }
-    uint8_t viewSize = display->getMaxRows();
+    const uint8_t viewSize = display->getMaxRows();
     if (constrained < view) {
         view = constrained;
     } else if (constrained > (view + (viewSize - 1))) {
@@ -39,7 +40,7 @@ void MenuScreen::setCursor(DisplayInterface* display, uint8_t position) {
     draw(display);
 }
 
-void MenuScreen::draw(DisplayInterface* display) {
+void MenuScreen::draw(DisplayInterface* display) const {
     bool notFullView = false;
     for (uint8_t i = 0; i < display->getMaxRows(); i++) {
         MenuItem* item = this->items[view + i];
@@ -76,7 +77,7 @@ bool MenuScreen::process(LcdMenu* menu, const unsigned char command) {
             down(display);
             return true;
         case BACK:
-            if (parent != NULL) {
+            if (parent != nullptr) {
                 menu->setScreen(parent);
             }
             printLog(F("MenuScreen::back"));

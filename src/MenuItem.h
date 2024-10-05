@@ -49,7 +49,7 @@ class MenuItem {
     friend MenuScreen;
 
   protected:
-    const char* text = NULL;
+    const char* text = nullptr;
 
   public:
     MenuItem(const char* text) : text(text) {}
@@ -69,8 +69,7 @@ class MenuItem {
         this->text = text;
     };
 
-    // Destructor
-    ~MenuItem() noexcept = default;
+    virtual ~MenuItem() noexcept = default;
 
   protected:
     /**
