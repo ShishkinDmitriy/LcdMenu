@@ -1,52 +1,49 @@
 #include <Button.h>
-#include <Control.h>
 #include <ItemControl.h>
-#include <ItemInputCharset.h>
-#include <ItemList.h>
-#include <ItemToggle.h>
 #include <LcdMenu.h>
 #include <MenuScreen.h>
 #include <SimpleRotary.h>
+#include <WidgetRange.h>
 #include <display/LiquidCrystal_I2CAdapter.h>
 #include <input/ButtonAdapter.h>
 #include <input/KeyboardAdapter.h>
 #include <input/SimpleRotaryAdapter.h>
 
 #define LCD_ROWS 2
-#define LCD_COLS 16
+#define LCD_COLS 12
 
 // Initialize the main menu items
 // clang-format off
 MENU_SCREEN(mainScreen, mainItems,
-    new ItemControl<float>("Temp", 
-        new NumberControl<float>({.min=-30.0, .max=40.0, .initial=26.5, .step=0.5, .format="%+2.1f\002C", .cycle=false, .blinkerOffset=2}),
-        [](float v0) {
+    new ItemControl<float>("Temp",
+        new WidgetRange<float>(-30.0, 40.0, 26.5, 0.5, "%+2.1f\002C", false, 2),
+        [](const float v0) {
             Serial.print("callback1(");
             Serial.print(v0);
             Serial.println(")");
         }),
-    new ItemControl<float>("Price", 
-        new NumberControl<float>({.min=0.0, .max=10.0, .initial=1.0, .step=0.1, .format="$%2.2f", .cycle=true}),
-        [](float v0) {
+    new ItemControl<float>("Price",
+        new WidgetRange<float>(0.0, 10.0, 1.0, 0.1, "$%2.2f", true),
+        [](const float v0) {
             Serial.print("callback1(");
             Serial.print(v0);
             Serial.println(")");
         }),
-    new ItemControl<float, int>("Dist", 
-        new NumberControl<float>({.min=0.0, .max=10.0, .initial=1.0, .step=0.1, .format="%2.1fm", .cycle=false, .blinkerOffset=1}),
-        new NumberControl<int>({.min=0, .max=100, .initial=10, .step=1, .format="\003%d%%", .cycle=false, .blinkerOffset=1}),
-        [](float v0, int v1) {
+    new ItemControl<float, int>("Dist",
+        new WidgetRange<float>(0.0, 10.0, 1.0, 0.1, "%2.1fm", false, 1),
+        new WidgetRange<int>(0, 100, 10, 1, "\003%d%%", false, 1),
+        [](const float v0, const int v1) {
             Serial.print("callback2(");
             Serial.print(v0);
             Serial.print(", ");
             Serial.print(v1);
             Serial.println(")");
         }),
-    new ItemControl<int, int, int>("Time", 
-        new NumberControl<int>({.min=0, .max=23, .initial=0, .step=1, .format="%02d", .cycle=true}),
-        new NumberControl<int>({.min=0, .max=59, .initial=0, .step=1, .format=":%02d", .cycle=true}),
-        new NumberControl<int>({.min=0, .max=59, .initial=0, .step=1, .format=":%02d", .cycle=true}),
-        [](int v0, int v1, int v2) {
+    new ItemControl<int, int, int>("Time",
+        new WidgetRange<int>(0, 23, 0, 1, "%02d", true),
+        new WidgetRange<int>(0, 59, 0, 1, ":%02d", true),
+        new WidgetRange<int>(0, 59, 0, 1, ":%02d", true),
+        [](const int v0, const int v1, const int v2) {
             Serial.print("callback3(");
             Serial.print(v0);
             Serial.print(", ");

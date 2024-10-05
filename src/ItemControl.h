@@ -1,25 +1,24 @@
 #ifndef ItemControl_H
 #define ItemControl_H
 
-#include "Control.h"
 #include "LcdMenu.h"
 #include "MenuItem.h"
-#include "printf.h"
+#include "WidgetValue.h"
 #include <utils/utils.h>
 
 class ItemControlBaseMany : public MenuItem {
   protected:
-    Control** controls = NULL;
+    BaseWidget** controls = nullptr;
     const uint8_t size = 0;
     uint8_t current = 0;
 
   public:
-    ItemControlBaseMany(const char* text, Control** controls, const uint8_t size, uint8_t current = 0)
+    ItemControlBaseMany(const char* text, BaseWidget** controls, const uint8_t size, uint8_t current = 0)
         : MenuItem(text), controls(controls), size(size), current(current) {}
-    uint8_t getCurrent() {
+    uint8_t getCurrent() const {
         return current;
     }
-    void setCurrent(uint8_t newCurrent) {
+    void setCurrent(const uint8_t newCurrent) {
         current = newCurrent;
     }
 
@@ -46,9 +45,9 @@ class ItemControlBaseMany : public MenuItem {
         int rightTrim = -1;
         uint8_t blinkerPosition = 0;
         if (!display->getEditModeEnabled()) {
-            char text[20];
             for (size_t i = 0; i < size; i++) {
-                accum += controls[i]->draw2(text, 20);
+                char text[20];
+                accum += controls[i]->draw(text, 20);
                 rightTrim = accum - limit;
                 Serial.print("Right iteration [");
                 Serial.print(i);
@@ -74,7 +73,7 @@ class ItemControlBaseMany : public MenuItem {
             // From current to left
             Serial.println("Left iteration start");
             while (left >= 0 && leftTrim < 0) {
-                accum += controls[left]->draw2(texts[left], 20);
+                accum += controls[left]->draw(texts[left], 20);
                 leftTrim = accum - limit;
                 Serial.print("Left iteration [");
                 Serial.print(left);
@@ -84,18 +83,13 @@ class ItemControlBaseMany : public MenuItem {
                 Serial.print(leftTrim);
                 Serial.println("]");
                 left--;
-                if (leftTrim >= 0) {
-                    Serial.print("leftTrim exceed ");
-                    Serial.println(leftTrim);
-                    break;
-                }
             }
             Serial.println("Left iteration end");
             if (leftTrim < 0 && current < size - 1) {
                 // From current + 1 to right
                 Serial.println("Right iteration start");
-                while (right < (int)size && rightTrim < 0) {
-                    accum += controls[right]->draw2(texts[right], 20);
+                while (right < size && rightTrim < 0) {
+                    accum += controls[right]->draw(texts[right], 20);
                     rightTrim = accum - limit;
                     Serial.print("Right iteration [");
                     Serial.print(right);
@@ -105,11 +99,6 @@ class ItemControlBaseMany : public MenuItem {
                     Serial.print(rightTrim);
                     Serial.println("]");
                     right++;
-                    if (rightTrim >= 0) {
-                        Serial.print("rightTrim exceed ");
-                        Serial.println(rightTrim);
-                        break;
-                    }
                 }
                 Serial.println("Right iteration end");
             }
@@ -214,23 +203,20 @@ class ItemControlBaseMany : public MenuItem {
     }
 };
 
-template <typename T0, typename T1 = void, typename T2 = void>
+template <typename T0 = void, typename T1 = void, typename T2 = void>
 class ItemControl : public ItemControlBaseMany {
   protected:
-    ControlValue<T0>* control0;
-    ControlValue<T1>* control1;
-    ControlValue<T2>* control2;
     void (*callback)(T0, T1, T2);
-    static Control** toArray(ControlValue<T0>* control0, ControlValue<T1>* control1, ControlValue<T2>* control2) {
-        static Control* array[] = {control0, control1, control2};
+    static BaseWidget** toArray(WidgetValue<T0>* control0, WidgetValue<T1>* control1, WidgetValue<T2>* control2) {
+        static BaseWidget* array[] = {control0, control1, control2};
         return array;
     }
     void triggerCallback() override {
-        if (callback != NULL) {
+        if (callback != nullptr) {
             callback(
-                static_cast<ControlValue<T0>*>(controls[0])->getValue(),
-                static_cast<ControlValue<T1>*>(controls[1])->getValue(),
-                static_cast<ControlValue<T2>*>(controls[2])->getValue());
+                static_cast<WidgetValue<T0>*>(controls[0])->getValue(),
+                static_cast<WidgetValue<T1>*>(controls[1])->getValue(),
+                static_cast<WidgetValue<T2>*>(controls[2])->getValue());
         }
     }
 
@@ -246,16 +232,16 @@ class ItemControl : public ItemControlBaseMany {
      */
     ItemControl(
         const char* text,
-        ControlValue<T0>* control0,
-        ControlValue<T1>* control1,
-        ControlValue<T2>* control2,
+        WidgetValue<T0>* control0,
+        WidgetValue<T1>* control1,
+        WidgetValue<T2>* control2,
         void (*callback)(T0, T1, T2))
         : ItemControlBaseMany(text, toArray(control0, control1, control2), 3), callback(callback) {}
 
     void setValues(T0 value0, T1 value1, T2 value2) {
-        static_cast<ControlValue<T0>*>(controls[0])->setValue(value0);
-        static_cast<ControlValue<T1>*>(controls[1])->setValue(value1);
-        static_cast<ControlValue<T2>*>(controls[2])->setValue(value2);
+        static_cast<WidgetValue<T0>*>(controls[0])->setValue(value0);
+        static_cast<WidgetValue<T1>*>(controls[1])->setValue(value1);
+        static_cast<WidgetValue<T2>*>(controls[2])->setValue(value2);
     }
 };
 
@@ -263,42 +249,42 @@ template <typename T0, typename T1>
 class ItemControl<T0, T1, void> : public ItemControlBaseMany {
   protected:
     void (*callback)(T0, T1) = NULL;
-    static Control** toArray(ControlValue<T0>* control0, ControlValue<T1>* control1) {
-        static Control* array[] = {control0, control1};
+    static BaseWidget** toArray(WidgetValue<T0>* control0, WidgetValue<T1>* control1) {
+        static BaseWidget* array[] = {control0, control1};
         return array;
     }
     void triggerCallback() override {
-        if (callback != NULL) {
+        if (callback != nullptr) {
             callback(
-                static_cast<ControlValue<T0>*>(controls[0])->getValue(),
-                static_cast<ControlValue<T1>*>(controls[1])->getValue());
+                static_cast<WidgetValue<T0>*>(controls[0])->getValue(),
+                static_cast<WidgetValue<T1>*>(controls[1])->getValue());
         }
     }
 
   public:
     ItemControl(
         const char* text,
-        ControlValue<T0>* control0,
-        ControlValue<T1>* control1,
+        WidgetValue<T0>* control0,
+        WidgetValue<T1>* control1,
         void (*callback)(T0, T1))
         : ItemControlBaseMany(text, toArray(control0, control1), 2), callback(callback) {}
 
     void setValues(T0 value0, T1 value1) {
-        static_cast<ControlValue<T0>*>(controls[0])->setValue(value0);
-        static_cast<ControlValue<T1>*>(controls[1])->setValue(value1);
+        static_cast<WidgetValue<T0>*>(controls[0])->setValue(value0);
+        static_cast<WidgetValue<T1>*>(controls[1])->setValue(value1);
     }
 };
 
 template <typename T0>
-class ItemControl<T0, void, void> : public MenuItem {
+class ItemControl<T0, void, void> final : public MenuItem {
   protected:
-    ControlValue<T0>* control;
+    WidgetValue<T0>* control;
     void (*callback)(T0);
 
   public:
     ItemControl(
         const char* text,
-        ControlValue<T0>* control,
+        WidgetValue<T0>* control,
         void (*callback)(T0))
         : MenuItem(text), control(control), callback(callback) {}
     void setValues(T0 value0) {
@@ -311,7 +297,7 @@ class ItemControl<T0, void, void> : public MenuItem {
         col += display->drawAt(row, col, (char*)this->text);
         col += display->drawAt(row, col, ':');
 
-        col += control->draw(display, row, col);
+        // col += control->draw(display, row, col);
         // display->clearAfter(row, col);
         if (display->getEditModeEnabled()) {
             display->drawBlinker();
@@ -352,4 +338,34 @@ class ItemControl<T0, void, void> : public MenuItem {
     }
 };
 
-#endif  // ItemControl_H
+template <>
+class ItemControl<void, void, void> final : public MenuItem {
+  protected:
+    void (*callback)();
+
+  public:
+    ItemControl(
+        const char* text,
+        void (*callback)())
+        : MenuItem(text), callback(callback) {}
+
+  protected:
+    void draw(DisplayInterface* display, uint8_t row) override {
+        display->drawAt(row, 1, (char*)this->text);
+    }
+
+    bool process(LcdMenu* menu, const unsigned char command) override {
+        switch (command) {
+            case ENTER:
+                if (callback != nullptr) {
+                    callback();
+                }
+                printLog(F("MenuItem<>::enter"), text);
+                return true;
+            default:
+                return false;
+        }
+    }
+};
+
+#endif
