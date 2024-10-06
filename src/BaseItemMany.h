@@ -142,9 +142,9 @@ class BaseItemMany : public MenuItem {
         Serial.println("]");
         display->drawAt(row, col, buffer);
         if (rightTrim < 0) {
-            Serial.print("Call clearAfter ");
-            Serial.println(col + strlen(buffer));
-            display->clearAfter(row, col + strlen(buffer) - 1);
+            // Serial.print("Call clearAfter ");
+            // Serial.println(col + strlen(buffer));
+            display->clearAfter(row, col + strlen(buffer));
         }
         if (display->getEditModeEnabled()) {
             display->drawBlinker();
@@ -167,23 +167,17 @@ class BaseItemMany : public MenuItem {
         if (display->getEditModeEnabled()) {
             switch (command) {
                 case ENTER:
-                    if (current == this->size - 1) {
+                    if (current < this->size - 1) {
+                        right(display);
+                    } else {
                         back(display);
-                        return true;
                     }
-                    // Be aware, no break statement.
-                    // if ENTER on last widget, then behaves like BACK
-                    // if ENTER on other widgets, then behaves like RIGHT
+                    return true;
                 case RIGHT:
-                    current = (current + 1) % this->size;
-                    MenuItem::draw(display);
+                    right(display);
                     return true;
                 case LEFT:
-                    current--;
-                    if (current < 0) {
-                        current = this->size;
-                    }
-                    MenuItem::draw(display);
+                    left(display);
                     return true;
                 case BACK:
                     back(display);
@@ -202,6 +196,17 @@ class BaseItemMany : public MenuItem {
                     return false;
             }
         }
+    }
+    void left(DisplayInterface* display) {
+        current--;
+        if (current < 0) {
+            current = this->size;
+        }
+        MenuItem::draw(display);
+    }
+    void right(DisplayInterface* display) {
+        current = (current + 1) % this->size;
+        MenuItem::draw(display);
     }
     void back(DisplayInterface* display) {
         display->setEditModeEnabled(false);

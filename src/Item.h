@@ -98,11 +98,11 @@ class Item<T0, void, void> final : public MenuItem {
         char buf[limit];
         widget->draw(buf, limit);
         col += display->drawAt(row, col, buf);
-        Serial.print("clearAfter (row=");
-        Serial.print(row);
-        Serial.print(", col=");
-        Serial.print(col);
-        Serial.println(")");
+        // Serial.print("clearAfter (row=");
+        // Serial.print(row);
+        // Serial.print(", col=");
+        // Serial.print(col);
+        // Serial.println(")");
         display->clearAfter(row, col);
         if (display->getEditModeEnabled()) {
             display->drawBlinker();

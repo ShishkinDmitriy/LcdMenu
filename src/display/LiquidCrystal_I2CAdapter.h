@@ -106,11 +106,11 @@ class LiquidCrystal_I2CAdapter : public DisplayInterface {
     }
 
     void clearAfter(uint8_t row, uint8_t col) override {
-        // Serial.print("clearAfter (raw=");
-        // Serial.print(row);
-        // Serial.print(", col=");
-        // Serial.print(col);
-        // Serial.print(") ");
+        Serial.print("clearAfter (raw=");
+        Serial.print(row);
+        Serial.print(", col=");
+        Serial.print(col);
+        Serial.println(") ");
         lcd->setCursor(col, row);
         for (uint8_t i = col; i < maxCols - 1; i++) {
             lcd->print(" ");
