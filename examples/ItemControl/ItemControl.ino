@@ -1,8 +1,10 @@
 #include <Button.h>
-#include <ItemControl.h>
+#include <Item.h>
 #include <LcdMenu.h>
 #include <MenuScreen.h>
 #include <SimpleRotary.h>
+#include <WidgetBool.h>
+#include <WidgetFloat.h>
 #include <WidgetRange.h>
 #include <display/LiquidCrystal_I2CAdapter.h>
 #include <input/ButtonAdapter.h>
@@ -15,23 +17,48 @@
 // Initialize the main menu items
 // clang-format off
 MENU_SCREEN(mainScreen, mainItems,
-    new ItemControl<float>("Temp",
-        new WidgetRange<float>(-30.0, 40.0, 26.5, 0.5, "%+2.1f\002C", false, 2),
+    new Item<>("Command",
+        [] {
+            Serial.println("callback0()");
+        }),
+    new Item<bool>("Temp",
+        new Widget<bool>(false),
+        [](const bool v0) {
+            Serial.print("callback1(");
+            Serial.print(v0);
+            Serial.println(")");
+        }),
+    new Item<uint8_t>("Price",
+        new Widget<uint8_t>(1, 1, "$%u"),
+        [](const uint8_t v0) {
+            Serial.print("callback1(");
+            Serial.print(v0);
+            Serial.println(")");
+        }),
+    new Item<char>("Char",
+        new WidgetRange<char>('A', 1, 'A', 'Z', "[%c]", true, 1),
+        [](const char v0) {
+            Serial.print("callback1(");
+            Serial.print(v0);
+            Serial.println(")");
+    }),
+    new Item<char>("Char",
+        new WidgetRange<char>('a', 1, 'a', 'z', "%c", true, 0),
+        [](const char v0) {
+            Serial.print("callback1(");
+            Serial.print(v0);
+            Serial.println(")");
+        }),
+    new Item<float>("Temp",
+        new WidgetRange<float>(2.5, 0.5, -30.0, 40.0, "%+.1f\002C", false, 2),
         [](const float v0) {
             Serial.print("callback1(");
             Serial.print(v0);
             Serial.println(")");
         }),
-    new ItemControl<float>("Price",
-        new WidgetRange<float>(0.0, 10.0, 1.0, 0.1, "$%2.2f", true),
-        [](const float v0) {
-            Serial.print("callback1(");
-            Serial.print(v0);
-            Serial.println(")");
-        }),
-    new ItemControl<float, int>("Dist",
-        new WidgetRange<float>(0.0, 10.0, 1.0, 0.1, "%2.1fm", false, 1),
-        new WidgetRange<int>(0, 100, 10, 1, "\003%d%%", false, 1),
+    new Item<float, int>("Dist",
+        new WidgetRange<float>(1.0, 0.1, 0.0, 10.0, "%2.1fm", false, 1),
+        new WidgetRange<int>(10, 1, 0, 100, "\003%d%%", false, 1),
         [](const float v0, const int v1) {
             Serial.print("callback2(");
             Serial.print(v0);
@@ -39,10 +66,10 @@ MENU_SCREEN(mainScreen, mainItems,
             Serial.print(v1);
             Serial.println(")");
         }),
-    new ItemControl<int, int, int>("Time",
-        new WidgetRange<int>(0, 23, 0, 1, "%02d", true),
-        new WidgetRange<int>(0, 59, 0, 1, ":%02d", true),
-        new WidgetRange<int>(0, 59, 0, 1, ":%02d", true),
+    new Item<int, int, int>("Time",
+        new WidgetRange<int>(0, 1,0, 23,  "%02d", true),
+        new WidgetRange<int>(0, 1,0, 59,  ":%02d", true),
+        new WidgetRange<int>(0, 1,0, 59,  ":%02d", true),
         [](const int v0, const int v1, const int v2) {
             Serial.print("callback3(");
             Serial.print(v0);

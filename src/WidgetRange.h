@@ -1,10 +1,10 @@
 #ifndef WIDGET_RANGE_H
 #define WIDGET_RANGE_H
 
-#include "WidgetValue.h"
+#include "Widget.h"
 
 template <typename T>
-class WidgetRange : public WidgetValue<T> {
+class WidgetRange : public Widget<T> {
   protected:
     const T minValue;
     const T maxValue;
@@ -12,27 +12,28 @@ class WidgetRange : public WidgetValue<T> {
 
   public:
     WidgetRange(
-        const T min,
-        const T max,
         T value,
         const T step,
+        const T min,
+        const T max,
         const char* format,
         const bool cycle = false,
         const uint8_t blinkerOffset = 0,
         void (*callback)(T) = nullptr)
-        : WidgetValue<T>(value, step, format, blinkerOffset, callback),
+        : Widget<T>(value, step, format, blinkerOffset, callback),
           minValue(min),
           maxValue(max),
           cycle(cycle) {}
     /**
      * @brief Sets the value.
-     *
      * @param newValue The value to set.
      * @note You need to call `LcdMenu::refresh` after this method to see the changes.
      */
     void setValue(T newValue) override {
-        WidgetValue<T>::setValue(constrain(newValue, minValue, maxValue));
+        Widget<T>::setValue(constrain(newValue, minValue, maxValue));
     }
+
+  protected:
     /**
      * @brief Increments the value.
      * If value is out of range and `cycle` then `minValue` will be used.
@@ -47,7 +48,7 @@ class WidgetRange : public WidgetValue<T> {
             }
             return false;
         }
-        return WidgetValue<T>::increment();
+        return Widget<T>::increment();
     }
 
     /**
@@ -64,7 +65,7 @@ class WidgetRange : public WidgetValue<T> {
             }
             return false;
         }
-        return WidgetValue<T>::decrement();
+        return Widget<T>::decrement();
     }
 };
 
