@@ -29,7 +29,7 @@ MENU_SCREEN(mainScreen, mainItems,
             Serial.println(")");
         }),
     new Item<uint8_t>("Price",
-        new Widget<uint8_t>(1, 1, "$%u"),
+        new Widget<uint8_t>(1, 1, "pre$%us"),
         [](const uint8_t v0) {
             Serial.print("callback1(");
             Serial.print(v0);
@@ -43,7 +43,7 @@ MENU_SCREEN(mainScreen, mainItems,
             Serial.println(")");
     }),
     new Item<char>("Char",
-        new WidgetRange<char>('a', 1, 'a', 'z', "%c", true, 0),
+        new WidgetRange<char>('a', 1, '0', '9', "%c", true),
         [](const char v0) {
             Serial.print("callback1(");
             Serial.print(v0);

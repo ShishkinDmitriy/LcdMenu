@@ -10,7 +10,8 @@ class LcdMenu;
 class BaseWidget {
     template <typename T0, typename T1, typename T2>
     friend class Item;
-    friend class BaseItemMany;
+    friend class BaseItemManyWidgets;
+    friend class BaseItemSingleWidget;
 
   protected:
     /**

@@ -48,7 +48,7 @@ class BaseWidgetWithValue<float> : public BaseWidget {
      * @param size the number of symbols to draw, not necessary the same as buffer length.
      */
     int draw(char* buffer, const size_t size) override {
-        return snprintf_(buffer, size, format, value);
+        return snprintf(buffer, size, format, value);
     }
     bool process(LcdMenu* menu, unsigned char command) override = 0;
     /**
