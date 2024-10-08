@@ -61,7 +61,7 @@ class BaseWidgetValue<float> : public BaseWidget {
         return blinkerOffset;
     }
 
-    void triggerCallback() {
+    void handleChange() {
         if (callback != nullptr) {
             callback(value);
         }

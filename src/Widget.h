@@ -27,12 +27,12 @@ class Widget : public BaseWidgetValue<T> {
             switch (command) {
                 case UP:
                     if (increment()) {
-                        BaseWidgetValue<T>::handleCommit();
+                        BaseWidgetValue<T>::handleChange();
                     }
                     return true;
                 case DOWN:
                     if (decrement()) {
-                        BaseWidgetValue<T>::handleCommit();
+                        BaseWidgetValue<T>::handleChange();
                     }
                     return true;
                 default:

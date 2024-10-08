@@ -2,14 +2,13 @@
 #define BASE_ITEM_SINGLE_WIDGET_H
 
 #include "LcdMenu.h"
-#include "BaseItemZeroWidget.h"
 #include "MenuItem.h"
 #include "Widget.h"
 #include <utils/utils.h>
 
 #define ITEM_DRAW_BUFFER_SIZE 20
 
-class BaseItemSingleWidget : public MenuItem, private BaseItemZeroWidget {
+class BaseItemSingleWidget : public MenuItem {
   protected:
     BaseWidget* widget = nullptr;
 

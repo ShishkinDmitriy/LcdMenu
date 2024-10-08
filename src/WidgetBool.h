@@ -51,9 +51,7 @@ class Widget<bool> : public BaseWidgetValue<bool> {
         if (command == ENTER) {
             value = !value;
             printLog(F("WidgetToggle::toggle"), value);
-            if (callback != nullptr) {
-                callback(value);
-            }
+            handleChange();
             return true;
         }
         return false;
