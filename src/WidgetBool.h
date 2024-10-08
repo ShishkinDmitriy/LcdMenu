@@ -9,7 +9,7 @@
  * Widget has ON/OFF `enabled` state.
  */
 template <>
-class Widget<bool> : public BaseWidgetWithValue<bool> {
+class Widget<bool> : public BaseWidgetValue<bool> {
 
   protected:
     const char* textOn = nullptr;
@@ -26,7 +26,7 @@ class Widget<bool> : public BaseWidgetWithValue<bool> {
      * @param callback reference to callback function
      */
     explicit Widget(const boolean value = false, const char* textOn = "ON", const char* textOff = "OFF", const char* format = "%s", const uint8_t blinkerOffset = 0, void (*callback)(bool) = nullptr)
-        : BaseWidgetWithValue(value, format, blinkerOffset, callback), textOn(textOn), textOff(textOff) {}
+        : BaseWidgetValue(value, format, blinkerOffset, callback), textOn(textOn), textOff(textOff) {}
 
     const char* getTextOn() const {
         return this->textOn;

@@ -1,32 +1,33 @@
-#ifndef BASE_WIDGET_WITH_VALUE_H
-#define BASE_WIDGET_WITH_VALUE_H
+#ifndef BASE_WIDGET_WITH_VALUE_FLOAT_H
+#define BASE_WIDGET_WITH_VALUE_FLOAT_H
 
-#include <BaseWidget.h>
+#include <BaseWidgetValue.h>
+#include <printf.h>
 
 class LcdMenu;
 
 /**
- * @class BaseWidgetWithValue
+ * @class BaseWidgetValue
  * @brief Base class for widget holding some value.
  */
-template <typename T>
-class BaseWidgetWithValue : public BaseWidget {
+template <>
+class BaseWidgetValue<float> : public BaseWidget {
     template <typename T0, typename T1, typename T2>
     friend class Item;
 
   protected:
-    T value;
+    float value;
     const char* format = nullptr;
     const uint8_t blinkerOffset = 0;
-    void (*callback)(T) = nullptr;
+    void (*callback)(float) = nullptr;
 
   public:
-    BaseWidgetWithValue(T value, const char* format, const uint8_t blinkerOffset = 0, void (*callback)(T) = nullptr)
+    BaseWidgetValue(float value, const char* format, const uint8_t blinkerOffset = 0, void (*callback)(float) = nullptr)
         : BaseWidget(), value(value), format(format), blinkerOffset(blinkerOffset), callback(callback) {}
     /**
      * @brief Retrieve current value.
      */
-    T getValue() const {
+    float getValue() const {
         return value;
     }
     /**
@@ -35,7 +36,7 @@ class BaseWidgetWithValue : public BaseWidget {
      * @param newValue The value to set.
      * @note You need to call `LcdMenu::refresh` after this method to see the changes.
      */
-    virtual void setValue(const T newValue) {
+    virtual void setValue(const float newValue) {
         value = newValue;
     }
 
@@ -47,7 +48,7 @@ class BaseWidgetWithValue : public BaseWidget {
      * @param size the number of symbols to draw, not necessary the same as buffer length.
      */
     int draw(char* buffer, const size_t size) override {
-        return snprintf(buffer, size + 1, format, value);
+        return snprintf(buffer, size, format, value);
     }
     bool process(LcdMenu* menu, unsigned char command) override = 0;
     /**
@@ -67,7 +68,7 @@ class BaseWidgetWithValue : public BaseWidget {
     }
 
   public:
-    ~BaseWidgetWithValue() override = default;
+    ~BaseWidgetValue() override = default;
 };
 
 #endif

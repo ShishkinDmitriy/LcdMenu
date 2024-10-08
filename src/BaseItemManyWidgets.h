@@ -1,5 +1,5 @@
-#ifndef BASE_ITEM_MANY_H
-#define BASE_ITEM_MANY_H
+#ifndef BASE_ITEM_MANY_WIDGETS_H
+#define BASE_ITEM_MANY_WIDGETS_H
 
 #include "LcdMenu.h"
 #include "MenuItem.h"
@@ -25,28 +25,9 @@ class BaseItemManyWidgets : public MenuItem {
     }
 
   protected:
-    virtual void triggerCallback() = 0;
+    virtual void handleCommit() = 0;
     void reset() {
         current = 0;
-    }
-    static void log(const char* buffer, const size_t size, const int idx) {
-        // Serial.print("buffer [");
-        // for (size_t i = 0; i < size + 1; i++) {
-        //     Serial.print(buffer[i]);
-        // }
-        // Serial.println("]");
-        // Serial.print("        ");
-        // for (size_t i = 0; i < idx; i++) {
-        //     Serial.print(" ");
-        // }
-        // Serial.print("^ ");
-        // Serial.print("idx = ");
-        // Serial.println(idx);
-    }
-    static void logBuf(const char* buffer) {
-        // Serial.print("buf [");
-        // Serial.print(buffer);
-        // Serial.println("]");
     }
     /**
      * @details In case of not in edit mode then draw from left to right until
@@ -240,17 +221,14 @@ class BaseItemManyWidgets : public MenuItem {
                 default:
                     return false;
             }
-        } else {
-            switch (command) {
-                case ENTER:
-                    display->setEditModeEnabled(true);
-                    printLog(F("ItemControl::enterEditMode"), this->text);
-                    MenuItem::draw(display);
-                    return true;
-                default:
-                    return false;
-            }
         }
+        if (command == ENTER) {
+            display->setEditModeEnabled(true);
+            printLog(F("ItemControl::enterEditMode"), this->text);
+            MenuItem::draw(display);
+            return true;
+        }
+        return false;
     }
     void left(DisplayInterface* display) {
         current--;
@@ -266,10 +244,35 @@ class BaseItemManyWidgets : public MenuItem {
     void back(DisplayInterface* display) {
         display->setEditModeEnabled(false);
         reset();
-        triggerCallback();
+        handleCommit();
         display->clearBlinker();
         MenuItem::draw(display);
         printLog(F("ItemControl::exitEditMode"), this->text);
+    }
+
+private:
+    static void log(const char* buffer, const size_t size, const int idx) {
+#ifdef DEBUG
+        Serial.print("buffer [");
+        for (size_t i = 0; i < size + 1; i++) {
+            Serial.print(buffer[i]);
+        }
+        Serial.println("]");
+        Serial.print("        ");
+        for (size_t i = 0; i < idx; i++) {
+            Serial.print(" ");
+        }
+        Serial.print("^ ");
+        Serial.print("idx = ");
+        Serial.println(idx);
+#endif
+    }
+    static void logBuf(const char* buffer) {
+#ifdef DEBUG
+        Serial.print("buf [");
+        Serial.print(buffer);
+        Serial.println("]");
+#endif
     }
 };
 
